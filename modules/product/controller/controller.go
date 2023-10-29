@@ -20,7 +20,7 @@ func NewProductController(productService service.ProductService) ProductControll
 
 func (p ProductController) InsertProduct(c *fiber.Ctx) (err error) {
 	var product model.Product
-	err = json.Unmarshal(c.Body(), product)
+	err = json.Unmarshal(c.Body(), &product)
 	if err != nil {
 		return c.Status(400).JSON(map[string]interface{}{
 			"status" : http.StatusText(400),
@@ -52,7 +52,7 @@ func (p ProductController) UpdateProduct(c *fiber.Ctx) (err error) {
 	}
 	
 	var product model.Product
-	err = json.Unmarshal(c.Body(), product)
+	err = json.Unmarshal(c.Body(), &product)
 	if err != nil {
 		return c.Status(400).JSON(map[string]interface{}{
 			"status" : http.StatusText(400),

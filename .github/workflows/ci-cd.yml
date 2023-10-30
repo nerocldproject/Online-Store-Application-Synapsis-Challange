@@ -37,20 +37,17 @@ jobs:
         remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
   
   run-container:
+    runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
-
     needs: [deploy]
-
     steps:
     - uses: 'actions/checkout@v3'
-
     - name: 'auth'
       uses: 'google-github-actions/auth@v1'
       with:
         credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
-
     - name: 'compute-ssh'
       uses: 'google-github-actions/ssh-compute@v0'
       with:
@@ -58,7 +55,6 @@ jobs:
         zone: 'us-central1-a'
         ssh_private_key: '${{ secrets.GCP_SSH_PRIVATE_KEY }}'
         command: 'echo Hello world'
-
     # Example of using the output
     - name: 'test'
       run: |-

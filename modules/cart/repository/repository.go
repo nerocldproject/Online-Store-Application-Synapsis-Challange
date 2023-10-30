@@ -72,7 +72,7 @@ func (c CartRepository) InsertCart(cart model.Cart) (err error) {
 				Update("quantity", cartInDB.Quantity+cart.Quantity)
 	}
 
-	result = tx.Table("product").Where("product_id = ? and deleted_at is null", product.ProductID).Update("quantity", cart.Quantity-product.Quantity)
+	result = tx.Table("product").Where("product_id = ? and deleted_at is null", product.ProductID).Update("quantity", product.Quantity-cart.Quantity)
 		if result.Error != nil {
 			tx.Rollback()
 			return result.Error

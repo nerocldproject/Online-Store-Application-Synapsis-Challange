@@ -22,18 +22,3 @@ jobs:
       run: docker build . --file Dockerfile --tag naxtamvan69/go-osa:latest
     - name: Docker Push
       run: docker push naxtamvan69/go-osa:latest
-
-  deployment:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v3
-      - name: Copy file to server
-          uses: burnett01/rsync-deployments@4.1
-          with:
-            switches: -avzr --delete --exclude=".git" --exclude=".github"
-            path: /
-            remote_path: ${{ secrets.DEPLOY_PATH }}
-            remote_host: ${{ secrets.SSH_HOST }}
-            remote_user: ${{ secrets.SSH_USERNAME }}
-            remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

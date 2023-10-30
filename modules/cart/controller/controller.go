@@ -66,7 +66,8 @@ func (cc CartController) GetCartByUsername(c *fiber.Ctx) error {
 }
 
 func (cc CartController) DeleteCart(c *fiber.Ctx) error {
-	err := cc.cartService.DeleteCart()
+	username := c.Locals("user_name").(string)
+	err := cc.cartService.DeleteCart(username)
 	if err != nil {
 		return c.Status(500).JSON(map[string]interface{}{
 			"status" : http.StatusText(500),
@@ -97,8 +98,8 @@ func (cc CartController) CheckOut(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(200).JSON(map[string]interface{}{
-		"status" : http.StatusText(200),
+	return c.Status(201).JSON(map[string]interface{}{
+		"status" : http.StatusText(201),
 		"message" : "success",
 		"data" : invoice,
 	})

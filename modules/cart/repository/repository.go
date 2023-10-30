@@ -90,7 +90,7 @@ func (c CartRepository) GetCartByUsername(username string) (carts []model.CartTo
 	return
 }
 
-func (c CartRepository) DeleteCart() (err error) {
+func (c CartRepository) DeleteCart(username string) (err error) {
 	tx := c.db.Begin()
 	defer func(){
 		if r := recover(); r != nil {
@@ -104,18 +104,16 @@ func (c CartRepository) DeleteCart() (err error) {
 	}()
 	
 	var carts []model.Cart
-	err = tx.Table("cart").Where("deleted_at is null and invoice_id is null").Find(&carts).Error
+	err = tx.Table("cart c").Joins("join customer cu on cu.user_id = c.user_id").Where("cu.user_name = ? and c.deleted_at is null and c.invoice_id is null", username).Find(&carts).Error
 	if err != nil {
 		tx.Rollback()
 		return
 	}
 
-	fmt.Println(1)
-
 	for _, cart := range carts {
 		var product mp.Product
 
-		err = tx.Table("product").Where("product_id = ? and deleted_at is null", cart.ProductID).Limit(1).Error
+		err = tx.Table("product").Where("product_id = ? and deleted_at is null", cart.ProductID).Limit(1).Scan(&product).Error
 		if err != nil {
 			tx.Rollback()
 			return
@@ -138,7 +136,7 @@ func (c CartRepository) DeleteCart() (err error) {
 	return tx.Commit().Error
 }
 
-func (c CartRepository) CreateInvoice(username string) (invoice model.InvoiceToRepsponse, err error) {
+func (c CartRepository) CreateInvoice(username string) (invoiceID string, err error) {
 	tx := c.db.Begin()
 	defer func(){
 		if r := recover(); r != nil {
@@ -151,7 +149,7 @@ func (c CartRepository) CreateInvoice(username string) (invoice model.InvoiceToR
 		}
 	}()
 
-	invoiceID := uuid.New().String()
+	invoiceID = uuid.New().String()
 
 	inv := model.Invoice{
 		InvoiceID: invoiceID,
@@ -163,36 +161,21 @@ func (c CartRepository) CreateInvoice(username string) (invoice model.InvoiceToR
 		return
 	}
 
-	err = tx.Table("cart c").
-		Joins("join costumer cu on cu.user_id = c.user_id").
-		Where("cu.user_name = ? and c.deleted_at is null and c.invoice_id is null").Update("c.invoice_id", invoiceID).Error
-	
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-	
-	var carts []model.CartToResponse
-	err = c.db.Table("cart c").Select("p.name, c.quantity, p.price, (cast(c.quantity as bigint)*cast(p.price as bigint)) as total_price").
-	Joins("join customer cu on cu.user_id = c.user_id").
-	Joins("join product p on p.product_id = c.product_id").
-	Where("cu.user_name = ? and c.deleted_at is null and c.invoice_id = ?", username, invoiceID).Find(&carts).Error
+	var result map[string]any
+	err = tx.Table("customer").Select("user_id").Where("user_name = ? and deleted_at is null", username).Limit(1).Scan(&result).Error
 	if err != nil {
 		tx.Rollback()
 		return
 	}
 
-	var totalPrice int64
-	for _, cart := range carts {
-		totalPrice += cart.TotalPrice
+	err = tx.Table("cart").
+		Where("user_id = ? and deleted_at is null and invoice_id is null", result["user_id"]).Update("invoice_id", invoiceID).Error
+	if err != nil {
+		tx.Rollback()
+		return
 	}
-
-	invoice = model.InvoiceToRepsponse{
-		InvoiceID: invoiceID,
-		CartToResponse: carts,
-		TotalPrice: totalPrice,
-	}
-	return invoice, tx.Commit().Error
+	
+	return invoiceID, tx.Commit().Error
 }
 
 func (c CartRepository) GetInvoiceById(id string, username string) (invoice model.InvoiceToRepsponse, err error) {
@@ -209,7 +192,7 @@ func (c CartRepository) GetInvoiceById(id string, username string) (invoice mode
 	}()
 
 	var carts []model.CartToResponse
-	err = c.db.Table("cart c").Select("p.name, c.quantity, p.price, (cast(c.quantity as bigint)*cast(p.price as bigint)) as total_price").
+	err = c.db.Table("cart c").Select("p.name as product_name, c.quantity, p.price, (cast(c.quantity as bigint)*cast(p.price as bigint)) as total_price").
 	Joins("join customer cu on cu.user_id = c.user_id").
 	Joins("join product p on p.product_id = c.product_id").
 	Where("cu.user_name = ? and c.deleted_at is null and c.invoice_id = ?", username, id).Find(&carts).Error

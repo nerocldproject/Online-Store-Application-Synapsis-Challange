@@ -21,12 +21,17 @@ func (c CartService) GetCartByUsername(username string) (carts []model.CartToRes
 	return c.cartRepo.GetCartByUsername(username)
 }
 
-func (c CartService) DeleteCart() (err error) {
-	return c.cartRepo.DeleteCart()
+func (c CartService) DeleteCart(username string) (err error) {
+	return c.cartRepo.DeleteCart(username)
 }
 
 func (c CartService) CreateInvoice(username string) (invoice model.InvoiceToRepsponse, err error) {
-	return c.cartRepo.CreateInvoice(username)
+	invoiceID, err := c.cartRepo.CreateInvoice(username)
+	if err != nil {
+		return
+	}
+
+	return c.cartRepo.GetInvoiceById(invoiceID, username)
 }
 
 func (c CartService) GetInvoiceById(id, username string) (invoice model.InvoiceToRepsponse, err error) {

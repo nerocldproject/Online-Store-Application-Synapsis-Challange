@@ -25,5 +25,5 @@ func NewCartHandler(g fiber.Router, db *gorm.DB) {
 	g.Get("/", jwtMiddleware, middleware.Authorization, cartController.GetCartByUsername)
 	g.Delete("/", jwtMiddleware, middleware.Authorization, cartController.DeleteCart)
 	g.Post("/checkout", jwtMiddleware, middleware.Authorization, cartController.CheckOut)
-	g.Get("/:id", jwtMiddleware, middleware.Authorization, cartController.GetInvoiceById)
+	g.Get("/invoice/:id", jwtMiddleware, middleware.Authorization, cartController.GetInvoiceById)
 }

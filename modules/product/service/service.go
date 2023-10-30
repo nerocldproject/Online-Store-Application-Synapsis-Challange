@@ -14,26 +14,25 @@ func NewProductService(productRepo repository.ProductRepository) ProductService 
 }
 
 func (p ProductService) InsertProduct(product model.Product) (err error) {
-	err = p.productRepo.InsertProduct(product)
-	return
+	return p.productRepo.InsertProduct(product)
 }
 
 func (p ProductService) UpdateProduct(product model.Product) (err error) {
-	err = p.productRepo.UpdateProduct(product)
-	return
+	return p.productRepo.UpdateProduct(product)
 }
 
 func (p ProductService) DeleteProduct(id int) (err error) {
-	err = p.productRepo.DeleteProduct(id)
-	return
+	return p.productRepo.DeleteProduct(id)
 }
 
-func (p ProductService) GetProductById(id int) (user model.Product, err error) {
-	user, err = p.productRepo.GetProductById(id)
-	return
+func (p ProductService) GetProductById(id int) (product model.Product, err error) {
+	return p.productRepo.GetProductById(id)
 }
 
-func (p ProductService) GetAllProduct() (users []model.Product, err error) {
-	users, err = p.productRepo.GetAllProduct()
-	return
+func (p ProductService) GetProductByCategory(cat string) (products []model.Product, err error) {
+	return p.productRepo.GetProductByCategory(cat)
+}
+
+func (p ProductService) GetAllProduct() (products []model.Product, err error) {
+	return p.productRepo.GetAllProduct()
 }

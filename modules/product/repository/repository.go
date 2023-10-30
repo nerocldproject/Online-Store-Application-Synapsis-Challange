@@ -39,7 +39,7 @@ func (p ProductRepository) UpdateProduct(product model.Product) (err error) {
 }
 
 func (p ProductRepository) DeleteProduct(id int) (err error) {
-	result := p.db.Table("product").Where("product_id = ? and deleted_at is null", id).Update("deleted_at", time.Now())
+	result := p.db.Table("product").Omit("updated_at").Where("product_id = ? and deleted_at is null", id).Update("deleted_at", time.Now())
 	if result.Error != nil {
 		return result.Error
 	}
@@ -51,17 +51,26 @@ func (p ProductRepository) DeleteProduct(id int) (err error) {
 	return
 }
 
-func (p ProductRepository) GetProductById(id int) (user model.Product, err error) {
-	result := p.db.Table("product").Where("product_id = ? and deleted_at is null", id).First(&user)
+func (p ProductRepository) GetProductById(id int) (product model.Product, err error) {
+	result := p.db.Table("product").Where("product_id = ? and deleted_at is null", id).First(&product)
 	if result.Error != nil {
 		return model.Product{}, result.Error
 	}
-
+	
 	return
 }
 
-func (p ProductRepository) GetAllProduct() (users []model.Product, err error) {
-	result := p.db.Table("product").Where("deleted_at is null").Find(&users)
+func (p ProductRepository) GetProductByCategory(cat string) (products []model.Product, err error) {
+	result := p.db.Table("product").Where("category_id = ? and deleted_at is null", cat).Find(&products)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	
+	return
+}
+
+func (p ProductRepository) GetAllProduct() (products []model.Product, err error) {
+	result := p.db.Table("product").Where("deleted_at is null").Find(&products)
 	if result.Error != nil {
 		return nil, result.Error
 	}

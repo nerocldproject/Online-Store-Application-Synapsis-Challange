@@ -123,7 +123,14 @@ func (p ProductController) GetProductById(c *fiber.Ctx) (err error) {
 }
 
 func (p ProductController) GetAllProduct(c *fiber.Ctx) (err error) {
-	products, err := p.productService.GetAllProduct()
+	var products []model.Product
+	cat := c.Query("cat")
+	if cat == "" {
+		products, err = p.productService.GetAllProduct()
+	} else {
+		products, err = p.productService.GetProductByCategory(cat)
+	}
+	
 	if err != nil {
 		return c.Status(500).JSON(map[string]interface{}{
 			"status" : http.StatusText(500),

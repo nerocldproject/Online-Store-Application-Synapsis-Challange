@@ -17,7 +17,7 @@ func NewProductHandler(g fiber.Router, db *gorm.DB) {
 	productService := service.NewProductService(productRepo)
 	productController := controller.NewProductController(productService)
 	jwtMiddleware := jwtware.New(jwtware.Config{
-		SigningKey: jwtware.SigningKey{Key: viper.GetString("SECRET_KEY")},
+		SigningKey: jwtware.SigningKey{Key: []byte(viper.GetString("SECRET_KEY"))},
 		Claims: &model.Claims{},
 	})
 

@@ -22,6 +22,9 @@ func (u UserRepository) InsertUser(user model.User) (err error) {
 			tx.Rollback()
 			err = r.(error)
 		}
+		if err != nil {
+			return
+		}
 	}()
 
 	var count int64

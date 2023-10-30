@@ -48,5 +48,7 @@ jobs:
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: cd direcotry
         run: ssh ${{ steps.ssh.outputs.SERVER }} cd go-osa
+      - name: ls
+        run: ssh ${{ steps.ssh.outputs.SERVER }} ls -a
       - name: run docker-compose
         run: ssh ${{ steps.ssh.outputs.SERVER }} docker-compose up -d

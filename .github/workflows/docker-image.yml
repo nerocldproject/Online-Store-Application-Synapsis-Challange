@@ -28,10 +28,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
-      - name: Deploy with rsync
-          run: rsync -avz docker-compose.yaml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/
+      - name: Copy file to server
+          uses: burnett01/rsync-deployments@4.1
+          with:
+            switches: -avzr --delete --exclude=".git" --exclude=".github"
+            path: /
+          remote_path: ${{ secrets.DEPLOY_PATH }}
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}

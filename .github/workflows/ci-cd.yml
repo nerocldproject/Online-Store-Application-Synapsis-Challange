@@ -51,4 +51,5 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USERNAME }}
           SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       - name: check direcctory position
-        run: ssh ${{ steps.ssh.outputs.SERVER }} pwd
+        run: ssh ${{ steps.ssh.outputs.SERVER }} cd go-osa
+        run: ssh ${{ steps.ssh.outputs.SERVER }} ls -a

@@ -43,7 +43,6 @@ jobs:
       id-token: 'write'
     needs: [deploy]
     steps:
-    steps:
       - id: ssh
         uses: invi5H/ssh-action@v1
         with:

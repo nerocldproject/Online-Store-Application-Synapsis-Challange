@@ -3,6 +3,6 @@ services:
   web:
     image: naxtamvan69/go-osa:latest
     container_name: go-osa
-    restart: on-failure
+    restart: unless-stopped
     ports:
       - "9000:9000"

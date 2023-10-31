@@ -1,0 +1,1 @@
+INSERT INTO category ("name", "created_at", "updated_at") VALUES ('laptop', now(), now()), ('smartphone', now(), now());

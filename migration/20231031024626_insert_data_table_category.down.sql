@@ -1,0 +1,5 @@
+TRUNCATE FROM cart;
+TRUNCATE FROM invoice;
+TRUNCATE FROM customer;
+TRUNCATE FROM product;
+TRUNCATE FROM category;

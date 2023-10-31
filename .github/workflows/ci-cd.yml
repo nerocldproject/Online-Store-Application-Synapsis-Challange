@@ -16,9 +16,9 @@ jobs:
       run: |
         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag naxtamvan69/go-osa:$(date +%s)
+      run: docker build . --file Dockerfile --tag naxtamvan69/go-osa:latest
     - name: Docker Push
-      run: docker push naxtamvan69/go-osa
+      run: docker push naxtamvan69/go-osa:latest
 
   deploy:
     runs-on: ubuntu-latest
